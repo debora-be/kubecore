@@ -16,8 +16,12 @@
           cobra-cli
           docker
           go
+          gotools
+          golangci-lint
+          kind
           kubectl
           minikube
+          tree
         ]
         ++ pkgs.lib.optional stdenv.isLinux pkgs.inotify-tools
         ++ pkgs.lib.optional stdenv.isDarwin pkgs.terminal-notifier

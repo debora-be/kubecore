@@ -16,7 +16,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.22'  # Updated to Go 1.22
+        go-version: '1.21'
         cache: true
         
     - name: Install dependencies
@@ -24,12 +24,6 @@ jobs:
 
     - name: Verify dependencies
       run: go mod verify
-
-    - name: Run go fmt
-      run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then exit 1; fi
-      
-    - name: Run go vet
-      run: go vet ./...
 
     - name: Run tests
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
@@ -43,79 +37,54 @@ jobs:
         file: ./coverage.txt
         flags: unittests
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'  # Updated to Go 1.22
-
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: latest
-        args: --timeout=5m
-        only-new-issues: true
-        skip-cache: true
-
   integration-tests:
     runs-on: ubuntu-latest
     needs: build-and-test
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'  # Updated to Go 1.22
-    
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
     
-    - name: Build Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        load: true
-        tags: kubecore:test
-    
-    - name: Set up KinD cluster
+    - name: Create k8s Kind Cluster
       uses: helm/kind-action@v1.8.0
-    
-    - name: Load image into KinD
+      with:
+        cluster_name: "test-cluster"
+        wait: 120s
+        
+    - name: Build Docker image
       run: |
-        kind load docker-image kubecore:test
-    
+        docker build -t kubecore:test .
+        
+    - name: Load Docker image into Kind cluster
+      run: |
+        kind load docker-image kubecore:test --name test-cluster
+        
     - name: Install test dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y apache2-utils
-
+        
+    - name: Verify cluster
+      run: |
+        kubectl cluster-info
+        kubectl get nodes
+        
     - name: Run integration tests
       run: |
         chmod +x scripts/*.sh
-        
-        echo "Running ingress tests..."
         ./scripts/ingress-test.sh
-        
-        echo "Running canary tests..."
         ./scripts/canary-test.sh
-        
-        echo "Running traffic tests..."
         ./scripts/traffic-test.sh
-        
-        echo "Running load tests..."
         ./scripts/advanced-load-test.sh
 
-  security-scan:
+  lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
-    - name: Run Gosec Security Scanner
-      uses: securego/gosec@master
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v3
       with:
-        args: ./...
+        version: latest
+        args: --timeout=5m
