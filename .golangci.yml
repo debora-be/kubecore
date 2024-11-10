@@ -1,0 +1,56 @@
+run:
+  # Timeout for analysis, e.g. 5m
+  timeout: 5m
+  
+  # Include test files or not
+  tests: true
+  
+  # Which dirs to skip
+  skip-dirs:
+    - vendor
+
+# Output configuration options
+output:
+  # colored-line-number|line-number|json|tab|checkstyle|code-climate|junit-xml|github-actions
+  format: colored-line-number
+  
+  # Print lines of code with issue
+  print-issued-lines: true
+
+# Configure specific linters
+linters:
+  enable:
+    - gofmt
+    - govet
+    - errcheck
+    - gosimple
+    - goconst
+    - goimports
+    - unused
+    - misspell
+    - revive
+
+linters-settings:
+  govet:
+    check-shadowing: true
+  gocyclo:
+    min-complexity: 15
+  maligned:
+    suggest-new: true
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+
+# Customize the issue output
+issues:
+  # Maximum count of issues with the same text
+  max-same-issues: 3
+  
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - dupl
+        - gosec
