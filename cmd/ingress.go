@@ -16,10 +16,13 @@ var (
 )
 
 var ingressCmd = &cobra.Command{
-	Use:   "create-ingress [service-name]",
-	Short: "Creates an Ingress for the service",
+	Use:   "ingress [service-name]",
+	Short: "Create ingress resources",
 	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
+		if clientset == nil {
+			return fmt.Errorf("kubernetes client not initialized")
+		}
 		return createIngress(args[0], clientset)
 	},
 }

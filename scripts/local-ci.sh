@@ -74,8 +74,8 @@ if [ "$1" == "--with-integration" ]; then
     fi
     
     # Create test cluster if it doesn't exist
-    if ! kind get clusters | grep -q "microkube-test"; then
-        kind create cluster --name microkube-test
+    if ! kind get clusters | grep -q "kubecore-test"; then
+        kind create cluster --name kubecore-test
     fi
     
     # Run integration tests
@@ -97,7 +97,7 @@ if [ "$1" == "--with-integration" ]; then
     
     # Optional: Delete test cluster
     if [ "$2" == "--cleanup" ]; then
-        kind delete cluster --name microkube-test
+        kind delete cluster --name kubecore-test
     fi
 fi
 

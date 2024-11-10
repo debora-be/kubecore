@@ -3,14 +3,15 @@ package cmd
 import (
 	"context"
 	"fmt"
+
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var cleanupCmd = &cobra.Command{
 	Use:   "cleanup",
-	Short: "Remove all services from Minikube",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Short: "Clean up resources",
+	RunE: func(_ *cobra.Command, _ []string) error {
 		// Remove deployments
 		err := clientset.AppsV1().Deployments("default").DeleteCollection(context.TODO(), metav1.DeleteOptions{}, metav1.ListOptions{})
 		if err != nil {

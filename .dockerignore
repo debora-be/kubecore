@@ -1,0 +1,24 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+kubecore
+kubecore
+
+# Test files
+*_test.go
+ab_results.txt
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# Other
+.DS_Store
+vendor/

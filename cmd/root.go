@@ -18,8 +18,8 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:   "kubecore",
-	Short: "kubecore - Kubernetes Service Manager",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+	Short: "A tool for managing Kubernetes resources",
+	PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
 		config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {
 			return fmt.Errorf("error building kubeconfig: %v", err)

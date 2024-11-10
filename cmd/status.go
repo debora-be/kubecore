@@ -3,14 +3,15 @@ package cmd
 import (
 	"context"
 	"fmt"
+
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var statusCmd = &cobra.Command{
 	Use:   "status",
-	Short: "Show the status of services in Minikube",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Short: "Check the status of deployments",
+	RunE: func(_ *cobra.Command, _ []string) error {
 		deployments, err := clientset.AppsV1().Deployments("default").List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
 			return fmt.Errorf("error listing deployments: %v", err)

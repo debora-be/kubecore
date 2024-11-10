@@ -14,7 +14,7 @@ var scaleCmd = &cobra.Command{
 	Use:   "scale [service-name]",
 	Short: "Scale a service in Minikube",
 	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		serviceName := args[0]
 
 		deployment, err := clientset.AppsV1().Deployments("default").Get(context.TODO(), serviceName, metav1.GetOptions{})

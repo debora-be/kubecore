@@ -72,8 +72,8 @@ jobs:
         
             - name: Build and load Docker image
               run: |
-                docker build -t microkube:test .
-                kind load docker-image microkube:test
+                docker build -t kubecore:test .
+                kind load docker-image kubecore:test
         
             - name: Install test dependencies
               run: |

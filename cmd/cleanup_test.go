@@ -40,33 +40,41 @@ func TestCleanupCmd(t *testing.T) {
 			Namespace: "default",
 		},
 	}
-	_, err = fakeClientset.CoreV1().Services("default").Create(context.TODO(), service1, metav1.CreateOptions{})
-	assert.NoError(t, err)
-	_, err = fakeClientset.CoreV1().Services("default").Create(context.TODO(), service2, metav1.CreateOptions{})
-	assert.NoError(t, err)
+
+	// Create the services
+	_, createErr := fakeClientset.CoreV1().Services("default").Create(context.TODO(), service1, metav1.CreateOptions{})
+	assert.NoError(t, createErr)
+	_, createErr = fakeClientset.CoreV1().Services("default").Create(context.TODO(), service2, metav1.CreateOptions{})
+	assert.NoError(t, createErr)
 
 	// Create a new cleanup command with the fake clientset
 	cleanupCmd := &cobra.Command{
 		Use:   "cleanup",
 		Short: "Remove all services from Minikube",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error { // Changed cmd to _ since it's unused
 			// Remove deployments
-			err := fakeClientset.AppsV1().Deployments("default").DeleteCollection(context.TODO(), metav1.DeleteOptions{}, metav1.ListOptions{})
-			if err != nil {
-				return fmt.Errorf("error removing deployments: %v", err)
+			if deleteErr := fakeClientset.AppsV1().Deployments("default").DeleteCollection(
+				context.TODO(),
+				metav1.DeleteOptions{},
+				metav1.ListOptions{},
+			); deleteErr != nil {
+				return fmt.Errorf("error removing deployments: %v", deleteErr)
 			}
 
 			// Remove services
-			services, err := fakeClientset.CoreV1().Services("default").List(context.TODO(), metav1.ListOptions{})
-			if err != nil {
-				return fmt.Errorf("error listing services: %v", err)
+			services, listErr := fakeClientset.CoreV1().Services("default").List(context.TODO(), metav1.ListOptions{})
+			if listErr != nil {
+				return fmt.Errorf("error listing services: %v", listErr)
 			}
 
 			for _, svc := range services.Items {
 				if svc.Name != "kubernetes" {
-					err := fakeClientset.CoreV1().Services("default").Delete(context.TODO(), svc.Name, metav1.DeleteOptions{})
-					if err != nil {
-						return fmt.Errorf("error removing service %s: %v", svc.Name, err)
+					if deleteErr := fakeClientset.CoreV1().Services("default").Delete(
+						context.TODO(),
+						svc.Name,
+						metav1.DeleteOptions{},
+					); deleteErr != nil {
+						return fmt.Errorf("error removing service %s: %v", svc.Name, deleteErr)
 					}
 				}
 			}
@@ -77,11 +85,11 @@ func TestCleanupCmd(t *testing.T) {
 	}
 
 	// Run the cleanup command
-	err = cleanupCmd.RunE(nil, nil)
-	assert.NoError(t, err, "Error running cleanup command")
+	runErr := cleanupCmd.RunE(nil, nil)
+	assert.NoError(t, runErr, "Error running cleanup command")
 
 	// Verify that the services are deleted
-	serviceList, err := fakeClientset.CoreV1().Services("default").List(context.TODO(), metav1.ListOptions{})
-	assert.NoError(t, err, "Error listing services after cleanup")
+	serviceList, listErr := fakeClientset.CoreV1().Services("default").List(context.TODO(), metav1.ListOptions{})
+	assert.NoError(t, listErr, "Error listing services after cleanup")
 	assert.Equal(t, 0, len(serviceList.Items), "Expected no services after cleanup, but found %d", len(serviceList.Items))
 }
