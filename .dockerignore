@@ -4,21 +4,27 @@
 
 # Build artifacts
 kubecore
-kubecore
+microkube
 
 # Test files
 *_test.go
+coverage.txt
 ab_results.txt
 
 # IDE specific files
 .idea/
 .vscode/
 
-# Temporary files
-*.swp
-*.swo
-*~
+# Config files
+.golangci.yml
+*.yaml
+*.yml
+!go.mod
+!go.sum
 
-# Other
+# Scripts
+scripts/
+
+# Others
 .DS_Store
 vendor/
