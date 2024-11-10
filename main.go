@@ -1,7 +1,7 @@
 // main.go
 package main
 
-import "microkube/cmd"
+import "kubecore/cmd"
 
 func main() {
 	cmd.Execute()

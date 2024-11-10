@@ -18,10 +18,10 @@ minikube addons enable ingress
 
 # Deploy test services
 echo "Deploying test services..."
-./microkube deploy service1
+./kubecore deploy service1
 wait_for_service service1
 
-./microkube deploy service2
+./kubecore deploy service2
 wait_for_service service2
 
 # Create Ingress for service1

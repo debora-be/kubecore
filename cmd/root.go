@@ -17,8 +17,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "microkube",
-	Short: "MicroKube - Kubernetes Service Manager",
+	Use:   "kubecore",
+	Short: "kubecore - Kubernetes Service Manager",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {

@@ -1,4 +1,4 @@
-module microkube
+module kubecore
 
 go 1.22.2
 
